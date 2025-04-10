@@ -1,0 +1,13 @@
+>> Inicializacion 
+--> Cada hormiga comienza con una mochila vacia
+--> Todos los objetos inicialmente permitidos
+
+>>Seleccion de probaibilidad
+-->Para cada objeto permitido, se calcula una probabilidad basada en la feromona, informacion heuristica, valor absoluto, diversidad
+-->Se utiliza un método de selección aleatorea para elegir el siguiente objeto.
+
+>>Construccion iterativa
+-->Despues de casa adicion, se actualiza el peso total y el valor
+-->Se actualiza la lista de objetos permitidos
+
+>>Actualizacion de feromonas
