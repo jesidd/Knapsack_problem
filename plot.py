@@ -26,6 +26,14 @@ def plot_progress(fitness_history, convergence_generation=None):
     plt.tight_layout()
     plt.show()
 
+def average_convergence(average_iter, num_iter):
+    plt.plot(range(1, num_iter + 1), average_iter, color='green')
+    plt.xlabel('Iteración')
+    plt.ylabel('Valor promedio de mejor solución')
+    plt.title('Convergencia promedio del método ACO')
+    plt.grid()
+    plt.show()
+
 def display_results(resultados):
 
     # Crear un DataFrame a partir de resultados

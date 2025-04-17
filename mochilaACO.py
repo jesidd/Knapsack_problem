@@ -22,7 +22,7 @@ class KnapsackProblem:
 
 
 class ACOKnapsack:
-    def __init__(self, ant_count=30, generations=150, alpha=1.0, beta=2.0, gamma=2.0, 
+    def __init__(self, ant_count=30, generations=100, alpha=1.0, beta=2.0, gamma=2.0, 
                  rho=0.5, q=100):
         """
         :param ant_count: número de hormigas
@@ -44,6 +44,7 @@ class ACOKnapsack:
         self.fitness_history = []
         self.convergence_generation = None
         self.execution_time = None
+        self.evolution_iter = [[] for _ in range(self.generations)]
 
     def _update_pheromone(self, problem, ants):
         """
@@ -69,44 +70,65 @@ class ACOKnapsack:
         import time
         start_time = time.time()
         
-        best_solution = None
-        best_value = 0
+        
         self.fitness_history = []
         last_improvement_gen = 0
         
-        for gen in range(self.generations):
-            # Crear población de hormigas
-            ants = [_AntKnapsack(self, problem) for _ in range(self.ant_count)]
-            
-            # Construir solución para cada hormiga
-            for ant in ants:
-                ant.construct_solution()
-                
-                # Calcular feromonas a depositar
-                ant.update_pheromone_delta()
-                
-                # Actualizar mejor solución global
-                if ant.total_value > best_value and ant.total_weight <= problem.capacity:
-                    best_value = ant.total_value
-                    best_solution = ant.solution.copy()
-                    last_improvement_gen = gen
-            
-            # Actualizar feromonas
-            self._update_pheromone(problem, ants)
-            
-            # Guardar mejor valor de la generación
-            self.fitness_history.append(best_value)
-            
-            #print(f'Generación {gen+1}/{self.generations}, mejor valor: {best_value}')
+        resultados =[]
         
-        # Calcular tiempo de ejecución
-        self.execution_time = time.time() - start_time
-        # Registrar la generación de convergencia
-        self.convergence_generation = last_improvement_gen + 1
+        for j in range(30):
+            best_solution = None
+            best_value = 0
+            best_generations = []
+            for gen in range(self.generations):
+                # Crear población de hormigas
+                ants = [_AntKnapsack(self, problem) for _ in range(self.ant_count)]
+                
+                # Construir solución para cada hormiga
+                for ant in ants:
+                    ant.construct_solution()
+                    
+                    # Calcular feromonas a depositar
+                    ant.update_pheromone_delta()
+                    
+                    # Actualizar mejor solución global
+                    if ant.total_value > best_value and ant.total_weight <= problem.capacity:
+                        best_value = ant.total_value
+                        best_solution = ant.solution.copy()
+                        last_improvement_gen = gen
+                        
+                    
+                # Guardar el mejor valor de esta generación (aunque no haya mejorado)     
+                best_generations.append(best_value)
+                
+                # Actualizar feromonas
+                self._update_pheromone(problem, ants)
+                
+                # Guardar mejor valor de la generación
+                self.fitness_history.append(best_value)
+                
+            # Calcular tiempo de ejecución
+            self.execution_time = time.time() - start_time
+            # Registrar la generación de convergencia
+            self.convergence_generation = last_improvement_gen + 1
+            
+            
+            resultados.append({
+                'iteracion': j + 1,
+                'solution': {'items': best_solution, 'value': best_value},
+                'total_weight': ant.total_weight,
+                'execution_time': self.execution_time,
+                'convergence_generation': self.convergence_generation
+            })   
         
-        return {'items': best_solution, 'value': best_value}
-
-
+            
+            
+        for i in range(self.generations):
+            self.evolution_iter[i].append(best_generations[i])
+            
+        return resultados
+    
+    
 class _AntKnapsack:
     def __init__(self, aco, problem):
         """
