@@ -117,7 +117,7 @@ plt.title('Resultados ACO - 30 Ejecuciones')
 plt.grid()
 plt.show()
 
-print(evolucion_iteraciones)
+print("Tamaño",len(evolucion_iteraciones))
 # Gráfica 2: Convergencia promedio
 promedio_por_iteracion = [sum(valores)/len(valores) for valores in evolucion_iteraciones]
 print("promedio ",promedio_por_iteracion)
