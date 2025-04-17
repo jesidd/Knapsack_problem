@@ -120,6 +120,7 @@ plt.show()
 print(evolucion_iteraciones)
 # Gráfica 2: Convergencia promedio
 promedio_por_iteracion = [sum(valores)/len(valores) for valores in evolucion_iteraciones]
+print("promedio ",promedio_por_iteracion)
 
 plt.plot(range(1, num_iteraciones + 1), promedio_por_iteracion, color='green')
 plt.xlabel('Iteración')

@@ -16,7 +16,7 @@ class KnapsackProblem:
         self.capacity = capacity
         self.n_items = len(weights)
         # Inicializar el vector de feromonas con valores uniformes
-        self.pheromone = [1.0 / self.n_items for _ in range(self.n_items)]
+        self.pheromone = [1 / self.n_items for _ in range(self.n_items)]
         # Inicializar la información heurística (valor/peso)
         self.eta = [values[i] / weights[i] if weights[i] > 0 else 0 for i in range(self.n_items)]
 
@@ -44,7 +44,7 @@ class ACOKnapsack:
         self.fitness_history = []
         self.convergence_generation = None
         self.execution_time = None
-        self.evolution_iter = [[] for _ in range(self.generations)]
+        self.evolution_iter = [[] for _ in range(30)]
 
     def _update_pheromone(self, problem, ants):
         """
@@ -73,60 +73,43 @@ class ACOKnapsack:
         
         self.fitness_history = []
         last_improvement_gen = 0
-        
-        resultados =[]
-        
-        for j in range(30):
-            best_solution = None
-            best_value = 0
-            best_generations = []
-            for gen in range(self.generations):
-                # Crear población de hormigas
-                ants = [_AntKnapsack(self, problem) for _ in range(self.ant_count)]
+
+        best_solution = None
+        best_value = 0
+        best_generations = []
+        for gen in range(self.generations):
+            # Crear población de hormigas
+            ants = [_AntKnapsack(self, problem) for _ in range(self.ant_count)]
+            
+            # Construir solución para cada hormiga
+            for ant in ants:
+                ant.construct_solution()
                 
-                # Construir solución para cada hormiga
-                for ant in ants:
-                    ant.construct_solution()
+                # Calcular feromonas a depositar
+                ant.update_pheromone_delta()
+                
+                # Actualizar mejor solución global
+                if ant.total_value > best_value and ant.total_weight <= problem.capacity:
+                    best_value = ant.total_value
+                    best_solution = ant.solution.copy()
+                    last_improvement_gen = gen
                     
-                    # Calcular feromonas a depositar
-                    ant.update_pheromone_delta()
-                    
-                    # Actualizar mejor solución global
-                    if ant.total_value > best_value and ant.total_weight <= problem.capacity:
-                        best_value = ant.total_value
-                        best_solution = ant.solution.copy()
-                        last_improvement_gen = gen
-                        
-                    
-                # Guardar el mejor valor de esta generación (aunque no haya mejorado)     
-                best_generations.append(best_value)
                 
-                # Actualizar feromonas
-                self._update_pheromone(problem, ants)
-                
-                # Guardar mejor valor de la generación
-                self.fitness_history.append(best_value)
-                
-            # Calcular tiempo de ejecución
-            self.execution_time = time.time() - start_time
-            # Registrar la generación de convergencia
-            self.convergence_generation = last_improvement_gen + 1
+            # Guardar el mejor valor de esta generación (aunque no haya mejorado)     
+            best_generations.append(best_value)
             
+            # Actualizar feromonas
+            self._update_pheromone(problem, ants)
             
-            resultados.append({
-                'iteracion': j + 1,
-                'solution': {'items': best_solution, 'value': best_value},
-                'total_weight': ant.total_weight,
-                'execution_time': self.execution_time,
-                'convergence_generation': self.convergence_generation
-            })   
-        
+            # Guardar mejor valor de la generación
+            self.fitness_history.append(best_value)
             
-            
-        for i in range(self.generations):
-            self.evolution_iter[i].append(best_generations[i])
-            
-        return resultados
+        # Calcular tiempo de ejecución
+        self.execution_time = time.time() - start_time
+        # Registrar la generación de convergencia
+        self.convergence_generation = last_improvement_gen + 1
+
+        return {'items': best_solution, 'value': best_value}, best_generations
     
     
 class _AntKnapsack:

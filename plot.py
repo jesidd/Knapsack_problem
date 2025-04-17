@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 
 def plot_progress(fitness_history, convergence_generation=None):
@@ -32,6 +33,17 @@ def average_convergence(average_iter, num_iter):
     plt.ylabel('Valor promedio de mejor solución')
     plt.title('Convergencia promedio del método ACO')
     plt.grid()
+    plt.show()
+    
+def convergence(aco):
+    evolution_array = np.array(aco.evolution_iter)  # 30 × 100
+    promedio_generacional = evolution_array.mean(axis=0)  # Promedio en cada generación
+
+    plt.plot(range(len(promedio_generacional)), promedio_generacional, color='red', linewidth=2)
+    plt.xlabel('Generación')
+    plt.ylabel('Promedio del mejor valor')
+    plt.title('Convergencia promedio en 30 ejecuciones')
+    plt.grid(True)
     plt.show()
 
 def display_results(resultados):
