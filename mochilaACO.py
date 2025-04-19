@@ -145,10 +145,8 @@ class _AntKnapsack:
             heuristic_factor = self.problem.eta[i] ** self.colony.beta         # Valor/Peso
             value_factor = self.problem.values[i] ** self.colony.gamma         # Valor absoluto
             # Penalizar objetos ya muy usados
-            #diversity_factor = (1.0 - self.solution[i] / self.problem.quantities[i]) ** 0.5
-            #Comenté el "diversity_factor" para hacer pruebas
-            
-            denominator += pheromone_factor * heuristic_factor * value_factor #* diversity_factor
+            diversity_factor = (1.0 - self.solution[i] / self.problem.quantities[i]) ** 0.5            
+            denominator += pheromone_factor * heuristic_factor * value_factor * diversity_factor
         
         if denominator == 0:
             return None
@@ -159,9 +157,8 @@ class _AntKnapsack:
             pheromone_factor = self.problem.pheromone[i] ** self.colony.alpha
             heuristic_factor = self.problem.eta[i] ** self.colony.beta
             value_factor = self.problem.values[i] ** self.colony.gamma
-            #diversity_factor = (1.0 - self.solution[i] / self.problem.quantities[i]) ** 0.5
-            
-            probabilities[i] = (pheromone_factor * heuristic_factor * value_factor ) / denominator # "* diversity_factor" despues de value factor
+            diversity_factor = (1.0 - self.solution[i] / self.problem.quantities[i]) ** 0.5
+            probabilities[i] = (pheromone_factor * heuristic_factor * value_factor * diversity_factor ) / denominator 
         
         # Selección por ruleta
         selected = None
@@ -229,4 +226,4 @@ class _AntKnapsack:
                 # La feromona es proporcional al valor aportado por este tipo de objeto
                 value_contribution = self.solution[i] * self.problem.values[i]
                 self.pheromone_delta[i] = (self.colony.Q * value_contribution / self.total_value) * \
-                 (self.solution[i] / self.problem.quantities[i])
+                    (self.solution[i] / self.problem.quantities[i])

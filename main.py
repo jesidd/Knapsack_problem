@@ -3,7 +3,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 from mochilaACO import KnapsackProblem, ACOKnapsack
-from plot import plot_progress, display_results, average_convergence, convergence, analizar_varianza
+from plot import plot_progress, display_results, average_convergence, convergence
 
 def leer_datos_excel(archivo):
     """
@@ -37,10 +37,10 @@ def main():
         aco = ACOKnapsack(
             ant_count=30,
             generations=100,
-            alpha=0.8,
+            alpha=1,
             beta=1.5,
             gamma=2.5,
-            rho=0.9,
+            rho=0.8,
             q=2
         )
 
@@ -64,8 +64,8 @@ def main():
     display_results(resultados)
     #average_convergence(best_generation[1], aco.generations)
 
-    # Nuevo: Análisis de varianza entre ejecuciones y dentro de cada ejecución
-    analizar_varianza(best_generation)
+    
+    average_convergence(best_generation)
 
 if __name__ == "__main__":
     main()

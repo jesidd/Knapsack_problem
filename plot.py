@@ -28,41 +28,10 @@ def plot_progress(fitness_history, convergence_generation=None):
     plt.show()
     
 
-def analizar_varianza(best_generation):
-    # 1. Mejor valor final por ejecución
-    mejores_finales = [min(ejecucion) for ejecucion in best_generation]
-    promedio_finales = np.mean(mejores_finales)
-    varianza_finales = np.var(mejores_finales)
-
-    # 2. Varianza interna de cada ejecución (sobre los mejores de cada generación)
-    varianzas_internas = [np.var(ejecucion) for ejecucion in best_generation]
-
-    print("\n--- Análisis de varianza ---")
-    print(f"Promedio de soluciones finales: {promedio_finales:.4f}")
-    print(f"Varianza entre soluciones finales: {varianza_finales:.4f}")
-
-    # Gráfico 1: Mejores soluciones finales por ejecución
-    plt.figure(figsize=(15, 5))
-
-    plt.subplot(1, 3, 1)
-    plt.plot(mejores_finales, marker='o')
-    plt.axhline(promedio_finales, color='r', linestyle='--', label='Promedio')
-    plt.title("Solución final por ejecución")
-    plt.xlabel("Ejecución")
-    plt.ylabel("Mejor valor final")
-    plt.legend()
-
-    # Gráfico 2: Varianza interna por ejecución
-    plt.subplot(1, 3, 2)
-    plt.plot(varianzas_internas, marker='x', color='green')
-    plt.title("Varianza interna (por ejecución)")
-    plt.xlabel("Ejecución")
-    plt.ylabel("Varianza de los mejores por generación")
-
-    # Gráfico 3: Convergencia promedio
+def average_convergence(best_generation):
+    # Gráfico  Convergencia promedio
     generaciones = len(best_generation[0])
     promedio_generacional = np.mean(best_generation, axis=0)
-    plt.subplot(1, 3, 3)
     plt.plot(promedio_generacional, color='blue')
     plt.title("Convergencia promedio (30 ejecuciones)")
     plt.xlabel("Generación")
@@ -72,13 +41,6 @@ def analizar_varianza(best_generation):
     plt.show()
 
 
-def average_convergence(average_iter, num_iter):
-    plt.plot(range(1, num_iter + 1), average_iter, color='green')
-    plt.xlabel('Iteración')
-    plt.ylabel('Valor promedio de mejor solución')
-    plt.title('Convergencia promedio del método ACO')
-    plt.grid()
-    plt.show()
     
 def convergence(aco):
     evolution_array = np.array(aco.evolution_iter)  # 30 × 100
