@@ -16,7 +16,7 @@ class KnapsackProblem:
         self.capacity = capacity
         self.n_items = len(weights)
         # Inicializar el vector de feromonas con valores uniformes
-        self.pheromone = [1 / self.n_items for _ in range(self.n_items)]
+        self.pheromone = [0.4 / self.n_items for _ in range(self.n_items)]
         # Inicializar la información heurística (valor/peso)
         self.eta = [values[i] / weights[i] if weights[i] > 0 else 0 for i in range(self.n_items)]
 
@@ -45,6 +45,7 @@ class ACOKnapsack:
         self.convergence_generation = None
         self.execution_time = None
         self.evolution_iter = [[] for _ in range(30)]
+        
 
     def _update_pheromone(self, problem, ants):
         """
@@ -60,6 +61,8 @@ class ACOKnapsack:
         for ant in ants:
             for i in range(problem.n_items):
                 problem.pheromone[i] += ant.pheromone_delta[i]
+                
+
 
     def solve(self, problem):
         """
@@ -70,13 +73,14 @@ class ACOKnapsack:
         import time
         start_time = time.time()
         
-        
-        self.fitness_history = []
+        converge = 0
         last_improvement_gen = 0
 
         best_solution = None
         best_value = 0
+        peso = 0
         best_generations = []
+        valor_promedio = 0
         for gen in range(self.generations):
             # Crear población de hormigas
             ants = [_AntKnapsack(self, problem) for _ in range(self.ant_count)]
@@ -89,11 +93,12 @@ class ACOKnapsack:
                 ant.update_pheromone_delta()
                 
                 # Actualizar mejor solución global
-                if ant.total_value > best_value and ant.total_weight <= problem.capacity:
+                if ant.total_value > best_value and ant.total_weight < problem.capacity:
                     best_value = ant.total_value
                     best_solution = ant.solution.copy()
                     last_improvement_gen = gen
-                    
+                    peso = ant.total_weight
+                
                 
             # Guardar el mejor valor de esta generación (aunque no haya mejorado)     
             best_generations.append(best_value)
@@ -104,12 +109,14 @@ class ACOKnapsack:
             # Guardar mejor valor de la generación
             self.fitness_history.append(best_value)
             
+            
         # Calcular tiempo de ejecución
         self.execution_time = time.time() - start_time
         # Registrar la generación de convergencia
         self.convergence_generation = last_improvement_gen + 1
+        valor_promedio = float(np.mean(best_generations))
 
-        return {'items': best_solution, 'value': best_value}, best_generations
+        return {'items': best_solution, 'value': best_value, 'peso': peso, 'promedio':valor_promedio }, best_generations
     
     
 class _AntKnapsack:
@@ -227,3 +234,4 @@ class _AntKnapsack:
                 value_contribution = self.solution[i] * self.problem.values[i]
                 self.pheromone_delta[i] = (self.colony.Q * value_contribution / self.total_value) * \
                     (self.solution[i] / self.problem.quantities[i])
+

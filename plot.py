@@ -33,10 +33,41 @@ def average_convergence(best_generation):
     generaciones = len(best_generation[0])
     promedio_generacional = np.mean(best_generation, axis=0)
     plt.plot(promedio_generacional, color='blue')
-    plt.title("Convergencia promedio (30 ejecuciones)")
+    plt.title("Convergencia promedio")
     plt.xlabel("Generación")
     plt.ylabel("Valor promedio del mejor individuo")
+    plt.tight_layout()
+    plt.show()
+    
 
+def average_time(tiempos):
+    # Estadísticas
+    media_tiempo = np.mean(tiempos)
+    varianza_tiempo = np.var(tiempos)
+
+    # Gráfica
+    plt.figure(figsize=(10, 5))
+    ejecuciones = list(range(1, len(tiempos) + 1))  # Para mostrar ejecuciones desde 1 hasta 30
+    plt.plot(ejecuciones, tiempos, marker='o', linestyle='-', label='Tiempo por ejecución')
+    plt.axhline(media_tiempo, color='red', linestyle='--', label=f'Media = {media_tiempo:.2f}s')
+    
+    plt.title("Tiempo Total por Ejecución (30 corridas)")
+    plt.xlabel("Ejecución")
+    plt.ylabel("Tiempo (segundos)")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+    
+def average_ejecution(best_generation):
+    mejores_finales = [max(ejecucion) for ejecucion in best_generation]
+    promedio_finales = np.mean(mejores_finales)
+    plt.plot(mejores_finales, marker='o')
+    plt.axhline(promedio_finales, color='r', linestyle='--', label='Promedio')
+    plt.title("Solución final por ejecución")
+    plt.xlabel("Ejecución")
+    plt.ylabel("Mejor valor final")
+    plt.legend()
     plt.tight_layout()
     plt.show()
 
@@ -73,24 +104,27 @@ def display_results(resultados):
 
     tabla_resumen2 = {
         '| Tiempo Promedio de Ejecución': df['tiempo_ejecucion'].mean(),
-        '| Iteración Promedio de Convergencia': df['convergencia'].mean()
+        '| Iteración Promedio de Convergencia': df['convergencia'].mean(axis=0)
     }
 
     # Mostrar tabla como DataFrame
-    resumen_df = pd.DataFrame(tabla_resumen, index=['Valor |'])
+    resumen_df = pd.DataFrame(tabla_resumen, index=['Valores globales |'])
     resumen_df2 = pd.DataFrame(tabla_resumen2, index=['Tiempo/Iteración |'])
     
     print(resumen_df)
     print("\n")
     print(resumen_df2)
+    
 
     # Gráfico opcional
     plt.figure(figsize=(10, 6))
     plt.bar(df['iteracion'], df['valor_solucion'], color='lightgreen')
+    plt.axhline(tabla_resumen['| Promedio'], color='r', linestyle='--', label='Promedio')
     plt.xlabel('Iteración')
     plt.ylabel('Valor de la Solución')
     plt.title('Valor de la Solución por Iteración')
     plt.grid(axis='y')
+    plt.legend()
     plt.tight_layout()
     plt.show()
 
